@@ -1,56 +1,78 @@
-import React, { useEffect, useState, useContext} from 'react';
-import Header from './Header';
+import React, { useState, useContext, useEffect } from "react";
+import Header from "./Header";
+import { Avatar, Typography, Container, Paper } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { AuthContext } from "../context/AuthProvider";
 import { firebaseDB } from "../config/firebase";
-import Avatar from '@material-ui/core/Avatar';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import { Typography, makeStyles } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) => ({
-  size: {
-    width: theme.spacing(18),
-    height: theme.spacing(20),
-    alignItems: 'center',
-    justifyContent: 'center',
+const useStyles = makeStyles(() => ({
+	root: {
+		position: "relative",
+		maxWidth: 275,
+		margin: "0 auto",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
 	},
-
+	paper: {
+		padding: "1rem",
+		position: "absolute",
+		width: "100%",
+		top: 50,
+		display: "flex",
+		justifyContent: "spaceEvenly",
+		alignItems: "center",
+	},
+	avatar: {
+		marginRight: 30,
+		marginLeft: 20,
+	},
+	title: {
+		width: "80%",
+	},
 }));
 
 const Profile = () => {
-    let [ user, setUser ]= useState(null);
-    const { currentUser } = useContext(AuthContext);
+	const classes = useStyles();
+	const { currentUser } = useContext(AuthContext);
+	const [userObj, setUserObj] = useState([]);
+	let uid = currentUser.uid;
 
-    let classes = useStyles();
+	useEffect(() => {
+		const loadUser = () => {
+			firebaseDB
+				.collection("users")
+				.doc(uid)
+				.get()
+				.then((doc) => {
+					return doc.data();
+				})
+				.then((userObject) => {
+					setUserObj(userObject);
+				});
+		};
+		loadUser();
+	}, [uid]);
 
-
-    useEffect(async () => {
-        let doc = await firebaseDB.collection("users").doc(currentUser.uid).get();
-        let userData = doc.data();
-        setUser(userData);
-        // console.log(userData);
-      }, []); 
-
-
-    return( 
-    <>
-    <Header/>
-    {user && (
-        <Card style={{  marginTop:"3rem" , marginLeft:"33rem" , width:"500px" , height:"200px" , backgroundColor:"#40E0D0"}}>
-            <CardContent style={ { display:"flex" }}>
-                <Avatar src={user.profileImageUrl} className={classes.size}/>
-                <Typography  variant="h3" style={{ marginLeft:"3.5rem" }}>
-                    {user.username}
+	return (
+		<div className="profile">
+		<Header></Header>
+			<Container className={classes.root}>
+				<Paper className={classes.paper}>
+					<Avatar
+						className={classes.avatar}
+						src={userObj?.profileImageUrl}
+					></Avatar>
+					<Typography className={classes.title} variant="h4">
+						{userObj?.username}
+					</Typography>
+				</Paper>
+                <Typography  variant="b1"  style={{ align:"right" }}> 
+                    Total Posts: {userObj?.postsCreated?.length}
                 </Typography>
-                {/* <Typography  variant="b1"  style={ { align:"right"}}>
-                    Posts Created : {user.postsCreated.length}
-                </Typography> */}
-            </CardContent>
-        </Card>
-    )
-    }
-    </>
-    );
-}
- 
+			</Container>
+		</div>
+	);
+};
+
 export default Profile;

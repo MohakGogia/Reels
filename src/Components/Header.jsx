@@ -1,14 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { AppBar, Toolbar, makeStyles, Button } from "@material-ui/core";
+import { AppBar, Toolbar, makeStyles, Button, Typography } from "@material-ui/core";
 import { AuthContext } from "../context/AuthProvider";
 import { NavLink } from "react-router-dom";
 import { firebaseDB } from "../config/firebase";
 import Avatar from '@material-ui/core/Avatar';
 import HomeIcon from '@material-ui/icons/Home';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from "@material-ui/icons/Add";
-import Tooltip from '@material-ui/core/Tooltip';
-import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
 	grow: {
@@ -46,33 +42,24 @@ const Header = () => {
     }
   };
 
-
-  useEffect(async () => {
-    let doc = await firebaseDB.collection("users").doc(currentUser.uid).get();
-    let user = doc.data();
-    try{
-      setprofilePic(user.profileImageUrl);
-    }
-    catch{
-      setprofilePic(null);
-    }
-  }, []); 
+  useEffect(() => {
+		const loadUser = () => {
+			firebaseDB.collection("users").doc(currentUser.uid).get()
+				.then((doc) => {
+          let user = doc.data();
+          setprofilePic(user.profileImageUrl);
+				})
+				.catch(() => {
+          setprofilePic(null);
+				});
+		};
+		loadUser();
+	}, [currentUser.uid]);
 
     return (
       <AppBar id="header" position="sticky" style={{ background: '#04CAC3' , marginBottom:"1rem"}}>
         <Toolbar>
         <Typography variant="body">Reels App</Typography>
-          {/* {currentUser != null ? (
-					<div className="upload-Video">
-						<label>
-              <Tooltip title="Upload" aria-label="Upload">
-                <Fab color="primary" className={classes.fabButton}>
-                  <AddIcon/>
-                </Fab>
-              </Tooltip>
-						</label>
-					</div>
-				) : null} */}
         <div className={classes.grow} />
         <NavLink to="/"  style={ {marginRight:"1rem"} } exact>
           <HomeIcon style={{ fontSize: 33 , color:"black" , marginTop:"5px"}} />

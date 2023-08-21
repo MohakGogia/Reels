@@ -169,7 +169,7 @@ const VideoPost = (props) => {
           variant="contained"
           color="secondary"
           onClick={addCommentToCommentList}
-          style={{marginLeft:"25px"}}
+          style={{marginTop:"1rem"}}
         >
           Post
         </Button>
