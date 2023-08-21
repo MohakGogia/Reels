@@ -159,7 +159,7 @@ const VideoPost = (props) => {
           variant="outlined"
           label="Add a comment"
           size="small"
-          style = {{ width:"35vh"}}
+          style = {{ width:"100%"}}
           value={comment}
           onChange={(e) => {
             setComment(e.target.value);
