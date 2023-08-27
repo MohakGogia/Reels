@@ -159,7 +159,7 @@ const VideoPost = (props) => {
           variant="outlined"
           label="Add a comment"
           size="small"
-          style = {{ width:"100%"}}
+          style = {{ width:"100%", marginTop:"0.5rem" }}
           value={comment}
           onChange={(e) => {
             setComment(e.target.value);
@@ -169,7 +169,8 @@ const VideoPost = (props) => {
           variant="contained"
           color="secondary"
           onClick={addCommentToCommentList}
-          style={{marginTop:"1rem"}}
+          disabled={comment.trim().length === 0}
+          style={{ marginTop:"1rem" }}
         >
           Post
         </Button>
